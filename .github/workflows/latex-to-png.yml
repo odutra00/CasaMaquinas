@@ -1,0 +1,22 @@
+name: Render LaTeX to PNG
+
+on:
+  push:
+    branches:
+      - main  # or the branch you want to trigger the action on
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Render LaTeX to PNG
+      uses: xu-cheng/latex-to-image-action@v2
+      with:
+        pdf_path: "README.md"
+        output_dir: "images"  # Output directory for generated images
+        github_token: ${{ secrets.GITHUB_TOKEN }}

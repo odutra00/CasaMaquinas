@@ -25,7 +25,18 @@ Manages the pump that pumps water to the solar warming system. It works together
 Manages the Cupper ionizer.
 
 ## Temperature sensors (NTC)
+\begin{circuitikz} 
+    \draw (0,0) to[V, v_=5V, invert] (0,3)
+                to[R, l_=NTC] (3,3)
+                to[short, -*] (4,3) node[anchor=south] {To ESP32 Pin}
+                to[R, l_=1k\Omega] (4,0)
+                -- (0,0);
+    \draw (0,0) node[ground]{};
+\end{circuitikz}
+### Characteristics
+Both NTCs are 10kOhm @ 25 degrees Celsius. Beta factor is 3950.
 #### Solar Plates NTC
-Is placed in the solar plates. In the ESP32 board, it is connected in pin ADC1, channel 3. In the RainMaker app, it appears as a temperatures sensor.
+It is placed in the solar plates. In the ESP32 board, it is connected in pin ADC1, channel 3. In the RainMaker app, it appears as a temperatures sensor. 
+
 #### Pool NTC
-Is placed in the pool's return path. In the ESP32 board, it is connected in pin ADC1, channel 3.
+It is placed in the pool's return path. In the ESP32 board, it is connected in pin ADC1, channel 3.

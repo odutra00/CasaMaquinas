@@ -1,3 +1,6 @@
+\documentclass{article}
+\usepackage{circuitikz}
+\begin{document}
 \begin{circuitikz}
     \draw (-0.5,5) --  node[anchor=south] {VCC} (0.5,5); % Dot node added
     \draw (0,5) to [R, l_=NTC] (0,3)
@@ -8,4 +11,4 @@
     \node[anchor=west] at (esp32pin) {}; % Node label
     \node[anchor=west] at ($(esp32pin) + (0.5,0)$) {To ESP32 Pin}; % Node label with displacement
 \end{circuitikz}
-
+\end{document}

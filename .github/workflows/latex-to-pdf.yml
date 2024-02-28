@@ -28,7 +28,11 @@ jobs:
     - name: Upload PDF file
       uses: actions/upload-artifact@v3
       with:
-        name: PDF
+        name: figNTC
         path: figNTC.pdf
+
+    - name: Unzip PDF artifact
+      run: unzip figNTC.zip
+      if: always()
 
 

@@ -32,7 +32,14 @@ jobs:
         path: figNTC.pdf
 
     - name: Unzip PDF artifact
+      uses: actions/upload-artifact@v3
       run: unzip figNTC.zip
       if: always()
+
+    - name: Upload unzipped files
+      uses: actions/upload-artifact@v3
+      with:
+        name: figNTC.pdf
+        path: ${{ github.workspace }}/figures
 
 

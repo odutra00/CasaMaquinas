@@ -24,5 +24,11 @@ jobs:
       uses: xu-cheng/latex-action@v3
       with:
         root_file: "figures/figNTC.tex"
+    
+    - name: Upload PDF file
+        uses: actions/upload-artifact@v3
+        with:
+          name: PDF
+          path: figNTC.pdf
 
 

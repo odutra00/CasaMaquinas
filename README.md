@@ -25,7 +25,7 @@ Manages the pump that pumps water to the solar warming system. It works together
 #### Activates GPIO 19
 Manages the Cupper ionizer.
 
-#Temperature Sensor Features
+# Temperature Sensor Features
 All temperature sensor features appear as temperature sensors in the RainMaker App.
 ### Characteristics
 Both sensors are NTCs of 10kOhm @ 25 degrees Celsius. Beta factor is 3950. They are conected as per the below figure.
@@ -37,7 +37,7 @@ It is placed in the solar plates. In the ESP32 board, it is connected in pin ADC
 #### Pool NTC
 It is placed in the pool's return path. In the ESP32 board, it is connected in pin ADC1, channel 3.
 
-#Level Sensor Features
+# Level Sensor Features
 The level sensor is a reed switch and does not appear in the RainMaker App. Instead, there is a logic in the code to activate the Drain Pump every time this sensor is activated. In the RainMaker App, the Drain Pump Switch will show status on. The sensor is connected as per figure below:
 
 ![PDF Image](figures/figLevel.pdf)

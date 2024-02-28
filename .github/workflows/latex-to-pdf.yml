@@ -31,4 +31,7 @@ jobs:
       run: unzip figNTC -d unzipped
       if: always()
 
+    - name: Display unzip path
+      run: ls -R unzipped
+
 

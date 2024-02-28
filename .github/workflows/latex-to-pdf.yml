@@ -31,10 +31,8 @@ jobs:
         name: figNTC
         path: figNTC.pdf
 
-    - name: Upload unzipped files
-      uses: actions/upload-artifact@v3
-      with:
-        name: figNTC.zip
-        path: ${{ github.workspace }}/figures
+    - name: Unzip PDF artifact
+      run: unzip ${{ github.workspace }}/figNTC.zip -d ${{ github.workspace }}/CasaMaquinas/figures
+      if: always()
 
 

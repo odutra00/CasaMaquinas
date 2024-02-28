@@ -2,7 +2,7 @@
 This project manages a swimming pool machine room with several features. It works with Esp32 and RainMaker framework.
 
 # Features
-Remembering that activation is done with logic level 0. Deactivation is done with logic level 1.
+Remembering that activation is done with logic level 0. Deactivation is done with logic level 1 as per the reles modules.
 
 ## Filtering pump 
 #### Activates I/O 16
@@ -27,14 +27,7 @@ Manages the Cupper ionizer.
 ## Temperature sensors (NTC)
 
 ![PDF Image](figures/figNTC.pdf)
-\begin{circuitikz} 
-    \draw (0,0) to[V, v_=5V, invert] (0,3)
-                to[R, l_=NTC] (3,3)
-                to[short, -*] (4,3) node[anchor=south] {To ESP32 Pin}
-                to[R, l_=1k\Omega] (4,0)
-                -- (0,0);
-    \draw (0,0) node[ground]{};
-\end{circuitikz}
+
 ### Characteristics
 Both NTCs are 10kOhm @ 25 degrees Celsius. Beta factor is 3950.
 #### Solar Plates NTC

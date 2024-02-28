@@ -26,9 +26,9 @@ jobs:
         root_file: "figures/figNTC.tex"
     
     - name: Upload PDF file
-        uses: actions/upload-artifact@v3
-        with:
-          name: PDF
-          path: figNTC.pdf
+      uses: actions/upload-artifact@v3
+      with:
+        name: PDF
+        path: figures/figNTC.pdf
 
 

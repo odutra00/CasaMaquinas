@@ -23,13 +23,13 @@ jobs:
     - name: Upload PDF file
       uses: actions/upload-artifact@v3
       with:
-        name: figNTC
-        path: figNTC.pdf
+        name: figNTC #this is the output file
+        path: figNTC.pdf #this is the path and name of the file to be uploaded
 
     - name: Download a single artifact
       uses: actions/download-artifact@v4
       with:
-        name: my-artifact
+        name: figNTC.zip
 
     - name: Unzip PDF artifact to the figures directory
       run: unzip ${{ github.workspace }}/workflow/Artifacts/figNTC.zip -d ${{ github.workspace }}/CasaMaquinas/figures

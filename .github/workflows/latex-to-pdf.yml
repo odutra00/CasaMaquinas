@@ -31,8 +31,8 @@ jobs:
         name: figNTC
         path: figNTC.pdf
 
-    - name: Unzip PDF artifact
-      run: unzip ${{ github.workspace }}/figNTC.zip -d ${{ github.workspace }}/CasaMaquinas/figures
+    - name: Unzip PDF artifact to the figures directory
+      run: unzip ${{ github.workspace }}/workflow/Artifacts/figNTC.zip -d ${{ github.workspace }}/CasaMaquinas/figures
       if: always()
 
 

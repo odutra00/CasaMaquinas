@@ -40,5 +40,5 @@ It is placed in the pool's return path. In the ESP32 board, it is connected in p
 # Level Sensor Features
 The level sensor is a reed switch and does not appear in the RainMaker App. Instead, there is a logic in the code to activate the Drain Pump every time this sensor is activated. In the RainMaker App, the Drain Pump Switch will show status on. The sensor is connected as per figure below:
 
-![PDF Image](https://github.com/odutra00/CasaMaquinas/actions/runs/${{ github.run_id }}/artifacts/figNTC.pdf)
+![PDF Image](https://github.com/odutra00/CasaMaquinas/figures/figNTC.pdf)
 

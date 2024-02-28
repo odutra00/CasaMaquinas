@@ -32,7 +32,6 @@ jobs:
         path: figNTC.pdf
 
     - name: Unzip PDF artifact
-      uses: actions/upload-artifact@v3
       run: unzip figNTC.zip
       if: always()
 

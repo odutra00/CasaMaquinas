@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Render LaTeX to PNG
-      uses: xu-cheng/latex-to-image-action@v2
+      uses: xu-cheng/latex-action@v3
       with:
         pdf_path: "README.md"
         output_dir: "images"  # Output directory for generated images

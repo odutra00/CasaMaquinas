@@ -17,6 +17,8 @@ jobs:
     - name: Render LaTeX to PNG
       uses: xu-cheng/latex-action@v3
       with:
-        pdf_path: "README.md"
+        root_file: "README.md"
         output_dir: "images"  # Output directory for generated images
+        name: PDF
+        path: README.pdf
         github_token: ${{ secrets.GITHUB_TOKEN }}

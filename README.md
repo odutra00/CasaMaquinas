@@ -26,7 +26,7 @@ Manages the Cupper ionizer.
 
 ## Temperature sensors (NTC)
 
-![Image Title](images/example.png)
+![PDF Image](.github/workflows/figNTC.pdf)
 \begin{circuitikz} 
     \draw (0,0) to[V, v_=5V, invert] (0,3)
                 to[R, l_=NTC] (3,3)

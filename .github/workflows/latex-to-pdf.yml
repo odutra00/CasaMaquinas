@@ -1,4 +1,4 @@
-name: Render LaTeX to PNG
+name: Render LaTeX to PDF
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Render LaTeX to PNG
+    - name: Render LaTeX to PDF
       uses: xu-cheng/latex-action@v3
       with:
         root_file: "figNTC.tex"

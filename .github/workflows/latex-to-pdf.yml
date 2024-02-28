@@ -32,6 +32,6 @@ jobs:
       if: always()
 
     - name: Display unzip path
-      run: ls -R unzipped
+      run: whereami
 
 

@@ -4,7 +4,7 @@
 \begin{circuitikz}
     \draw (-0.5,5) --  node[anchor=south] {VCC} (0.5,5); % Dot node added
     \draw (0,5) to [R, l_=1k$\Omega$] (0,3)
-                to [R, l_=LevelSwitch] (0,0);
+                to [ospst, l_=Switch] (0,0); % Replaced resistor with switch
     \draw (0,0)  node[ground]{};
     \draw (0, 2.5) node[circ, anchor=south] (esp32pin) {}; % Node with small segment added
     \draw (esp32pin) -- ++(0.5,0); % Small segment

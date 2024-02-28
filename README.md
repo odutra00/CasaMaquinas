@@ -25,6 +25,8 @@ Manages the pump that pumps water to the solar warming system. It works together
 Manages the Cupper ionizer.
 
 ## Temperature sensors (NTC)
+
+![Image Title](images/example.png)
 \begin{circuitikz} 
     \draw (0,0) to[V, v_=5V, invert] (0,3)
                 to[R, l_=NTC] (3,3)

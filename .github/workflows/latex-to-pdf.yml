@@ -29,7 +29,7 @@ jobs:
     - name: Download a single artifact
       uses: actions/download-artifact@v3
       with:
-        name: figNTC.zip
+        name: figNTC
 
     - name: Unzip PDF artifact to the figures directory
       run: unzip ${{ github.workspace }}/workflow/Artifacts/figNTC.zip -d ${{ github.workspace }}/CasaMaquinas/figures

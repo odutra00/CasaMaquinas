@@ -1,3 +1,8 @@
+- name: Install LaTeX Packages
+  run: |
+    sudo apt-get update
+    sudo apt-get install texlive-latex-extra
+
 name: Render LaTeX to PDF
 
 on:

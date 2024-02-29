@@ -30,7 +30,7 @@ All temperature sensor features appear as temperature sensors in the RainMaker A
 ### Characteristics
 Both sensors are NTCs of 10kOhm @ 25 degrees Celsius. Beta factor is 3950. They are conected as per the below figure.
 
-![figNTC](https://github.com/odutra00/CasaMaquinas/figures/figNTC.png)
+![figNTC](figures/figNTC.png)
 
 #### Solar Plates NTC
 It is placed in the solar plates. In the ESP32 board, it is connected in pin ADC1, channel 3. In the RainMaker app, it appears as a temperatures sensor. 
@@ -40,5 +40,5 @@ It is placed in the pool's return path. In the ESP32 board, it is connected in p
 # Level Sensor Features
 The level sensor is a reed switch and does not appear in the RainMaker App. Instead, there is a logic in the code to activate the Drain Pump every time this sensor is activated. In the RainMaker App, the Drain Pump Switch will show status on. The sensor is connected as per figure below:
 
-![figLevel](https://github.com/odutra00/CasaMaquinas/figures/figLevel.png)
+![figLevel](figures/figLevel.png)
 

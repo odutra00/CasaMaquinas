@@ -17,6 +17,16 @@ for file in "$folder"/*.tex; do
         # Check if pdflatex compilation was successful
         if [ $? -eq 0 ]; then
             echo "Compilation successful: $filename"
+
+            # Convert PDF to PNG
+            convert -density 300 "$filename_no_ext.pdf" -quality 100 "$filename_no_ext.png"
+
+            # Check if PNG conversion was successful
+            if [ $? -eq 0 ]; then
+                echo "PNG conversion successful: $filename_no_ext.pdf"
+            else
+                echo "Error converting PDF to PNG: $filename_no_ext.pdf"
+            fi
         else
             echo "Error compiling: $filename"
         fi

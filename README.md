@@ -30,7 +30,7 @@ All temperature sensor features appear as temperature sensors in the RainMaker A
 ### Characteristics
 Both sensors are NTCs of 10kOhm @ 25 degrees Celsius. Beta factor is 3950. They are conected as per the below figure.
 
-<img src="figures/figNTC.png" alt="figNTC" width="30%">
+<img src="figures/figNTC.png" alt="figNTC" width="60%">
 
 #### Solar Plates NTC
 It is placed in the solar plates. In the ESP32 board, it is connected in pin ADC1, channel 3. In the RainMaker app, it appears as a temperatures sensor. 

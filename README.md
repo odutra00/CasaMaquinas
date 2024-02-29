@@ -42,7 +42,7 @@ Both sensors are NTCs of 10kOhm @ 25 degrees Celsius. Beta factor is 3950. They 
 #### Solar Plates NTC
 It is placed in the solar plates. In the ESP32 board, it is connected in pin ADC1, channel 3. In the RainMaker app, it appears as a temperatures sensor. 
 #### Pool NTC
-It is placed in the pool's return path. In the ESP32 board, it is connected in pin ADC1, channel 3.
+It is placed in the pool's return path. In the ESP32 board, it is connected in pin ADC1, channel 6.
 
 # Level Sensor Features
 The level sensor is a reed switch and does not appear in the RainMaker App. Instead, there is a logic in the code to activate the Drain Pump every time this sensor is activated. In the RainMaker App, the Drain Pump Switch will show status on. The sensor is connected as per figure below:

@@ -32,6 +32,8 @@ Both sensors are NTCs of 10kOhm @ 25 degrees Celsius. Beta factor is 3950. They 
 
 ![figNTC](figures/figNTC.png)
 
+<img src="figures/figNTC.png" alt="figNTC" width="50%">
+
 #### Solar Plates NTC
 It is placed in the solar plates. In the ESP32 board, it is connected in pin ADC1, channel 3. In the RainMaker app, it appears as a temperatures sensor. 
 #### Pool NTC

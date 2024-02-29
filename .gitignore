@@ -1,0 +1,3 @@
+# Ignore all files in the figures folder except .tex files
+figures/*
+!figures/*.tex

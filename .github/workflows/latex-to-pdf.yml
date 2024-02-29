@@ -1,0 +1,37 @@
+name: Render LaTeX to PDF
+
+on:
+  push:
+    branches:
+      - main  # or the branch you want to trigger the action on
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Render LaTeX to PDF
+      uses: xu-cheng/latex-action@v3
+      with:
+        root_file: "figures/figNTC.tex"
+    
+    - name: Upload PDF file
+      uses: actions/upload-artifact@v3
+      with:
+        name: figNTC #this is the output file
+        path: figNTC.pdf #this is the path and name of the file to be uploaded
+
+
+    - name: Unzip PDF artifact
+      run: unzip figNTC -d unzipped
+      if: always()
+
+    - name: Display unzip path
+      run: whereami
+
+

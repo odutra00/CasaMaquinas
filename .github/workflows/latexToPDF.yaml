@@ -1,9 +1,16 @@
 name: Compile LaTeX and Upload PDF
 
+#on:
+#  push:
+#    paths:
+#      - 'figures/*/.tex'  # Trigger the workflow when any .tex file in the figures directory or its subdirectories is modified
+
 on:
   push:
-    paths:
-      - 'figures/*/.tex'  # Trigger the workflow when any .tex file in the figures directory or its subdirectories is modified
+    branches:
+      - main  # or the branch you want to trigger the action on
+  pull_request:
+
 
 jobs:
   compile_and_upload:

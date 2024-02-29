@@ -1,5 +1,12 @@
 # CasaMaquinas
 This project manages a swimming pool machine room with several features. It works with Esp32 and RainMaker framework.
+## Dependencies
+This projects uses libraries:
+- RMaker framework;
+- thermistor from panStamp project;
+- Simpletimer from ;
+- Remember to assign your user into the dialout user: "sudo usermod -a -G dialout <username> " to be able to access USB port.
+
 
 # Switch Features
 Remembering that activation is done with logic level 0. Deactivation is done with logic level 1 as per the reles modules.

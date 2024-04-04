@@ -4,7 +4,6 @@ This project manages a swimming pool machine room with several features. It work
 This projects uses libraries:
 - RMaker framework;
 - thermistor from panStamp project;
-- Simpletimer;
 - Remember to assign your user into the dialout user: "sudo usermod -a -G dialout <username> " to be able to access USB port.
 
 

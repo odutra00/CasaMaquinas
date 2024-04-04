@@ -1,11 +1,10 @@
-// This example demonstrates the ESP RainMaker with a standard Switch device.
+// This firmware manages a machine's pool house with several features.
+//Please refer to https://github.com/odutra00/CasaMaquinas
 #include "RMaker.h"
 #include "WiFi.h"
 #include "WiFiProv.h"
 #include "AppInsights.h"
-//#include <esp_rmaker_core.h>
 #include <driver/adc.h> // ADC library
-#include <Simpletimer.h>
 #include <thermistor.h>
 #include <esp_rmaker_standard_types.h>
 
@@ -21,8 +20,17 @@
 #define NTC_BETA_PLACAS  3950 //3950
 #define NOMINAL_NTC_SERIAL_RES_PISCINA 991
 #define NOMINAL_NTC_SERIAL_RES_PLACAS 987
+#define NUMBER_OF_MINUTES_SEND_TEMP 1
+#define NUMBER_OF_MINUTES_KEEP_BOMBLADRAO 1
+unsigned long currentTime1 = 0;
+unsigned long currentTime2 = 0;
+unsigned long timer1StartTime = 0;
+unsigned long timer1Duration = NUMBER_OF_MINUTES_SEND_TEMP * 60000; // 1 minute in milliseconds
+unsigned long timer2StartTime = 0;
+unsigned long timer2Duration = NUMBER_OF_MINUTES_KEEP_BOMBLADRAO * 60000; // 5 minutes in milliseconds
 const char *service_name = "CasaMaquinas";
 const char *pop = "Odilon";
+bool FLAG_TRIGGER_BOMBINHA_OFF = false;
 
 // GPIO for push button
 #if CONFIG_IDF_TARGET_ESP32C3
@@ -58,8 +66,6 @@ static Switch *switch_ION = NULL;
 static TemperatureSensor TemperaturaPiscina("Piscina");
 static TemperatureSensor TemperaturaPlacas("Placas");
 static Device thermostat_Aquecimento("Aquecimento", "esp.device.thermostat", &gpio_switch_Aquecimento);
-//Time for time series and callback1 call to update temperature data
-Simpletimer timer1{};
 THERMISTOR ntc_Piscina (A6, NOMINAL_NTC_RES, NTC_BETA_PISCINA, NOMINAL_NTC_SERIAL_RES_PISCINA);
 THERMISTOR ntc_Placas  (A3, NOMINAL_NTC_RES, NTC_BETA_PLACAS, NOMINAL_NTC_SERIAL_RES_PLACAS);
 
@@ -205,6 +211,12 @@ void setup()
     pinMode(gpio_switch_ION, OUTPUT);
     digitalWrite(gpio_switch_ION, switch_state_ION);
 
+
+    if (digitalRead(gpio_Nivel) == LOW){ //there is water. Start esp32 with BombinhaLadrao on
+      nivel_Interruption_Flag = true;
+    }
+
+    
     Node my_node;
     my_node = RMaker.initNode("Casa de Maquinas");
 
@@ -213,7 +225,6 @@ void setup()
     adc1_config_width(ADC_WIDTH_BIT_12); // 12-bit resolution
     adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11); // Configure ADC1 Channel 0 with attenuation - Piscina
     adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_11); // Configure ADC1 Channel 0 with attenuation - Plcas
-    timer1.register_callback(sendTemperaturas);
 
     // Initialize switch devices
     switch_Filtragem      = new Switch("Filtragem", &gpio_switch_Filtragem,       false);
@@ -301,74 +312,73 @@ void setup()
 
 void loop()
 {
-    timer1.run(60000);//timer to update temperature data = 1 minute
+  currentTime1 = millis();
+  if (currentTime1 - timer1StartTime >= timer1Duration) {
+    // Timer 1 duration reached
+    timer1StartTime = currentTime1; // Reset timer 1
+    sendTemperaturas();    
+  }
+  currentTime2 = millis();
+  if ( (currentTime2 - timer2StartTime >= timer2Duration) && (FLAG_TRIGGER_BOMBINHA_OFF) ) {
+    // Timer 2 duration reached
+    turnOffBombinhaLadrao();
+    }  
 
-    if (digitalRead(gpio_0) == LOW) {  // Push button pressed
-        // Key debounce handling
-        delay(100);
-        int startTime = millis();
-        while (digitalRead(gpio_0) == LOW) {
-            delay(50);
-        }
-        int endTime = millis();
+  if (digitalRead(gpio_0) == LOW) {  // Push button pressed
+      // Key debounce handling
+      delay(100);
+      int startTime = millis();
+      while (digitalRead(gpio_0) == LOW) {
+          delay(50);
+      }
+      int endTime = millis();
 
-        if ((endTime - startTime) > 10000) {
-            // If key pressed for more than 10secs, reset all
-            Serial.printf("Reset to factory.\n");
-            RMakerFactoryReset(2);
-        } else if ((endTime - startTime) > 3000) {
-            Serial.printf("Reset Wi-Fi.\n");
-            // If key pressed for more than 3secs, but less than 10, reset Wi-Fi
-            RMakerWiFiReset(2);
-        } else {
-            // Toggle device state
-            switch_state_Filtragem = !switch_state_Filtragem;
-            Serial.printf("Toggle State to %s.\n", switch_state_Filtragem ? "true" : "false");
-            if (switch_Filtragem) {
-                switch_Filtragem->updateAndReportParam(ESP_RMAKER_DEF_POWER_NAME,
-                                                switch_state_Filtragem);
+      if ((endTime - startTime) > 10000) {
+          // If key pressed for more than 10secs, reset all
+          Serial.printf("Reset to factory.\n");
+          RMakerFactoryReset(2);
+      } else if ((endTime - startTime) > 3000) {
+          Serial.printf("Reset Wi-Fi.\n");
+          // If key pressed for more than 3secs, but less than 10, reset Wi-Fi
+          RMakerWiFiReset(2);
+      } else {
+          // Toggle device state
+          switch_state_Filtragem = !switch_state_Filtragem;
+          Serial.printf("Toggle State to %s.\n", switch_state_Filtragem ? "true" : "false");
+          if (switch_Filtragem) {
+              switch_Filtragem->updateAndReportParam(ESP_RMAKER_DEF_POWER_NAME,
+                                              switch_state_Filtragem);
+          }
+          (switch_state_Filtragem == false) ? digitalWrite(gpio_switch_Filtragem, HIGH)
+          : digitalWrite(gpio_switch_Filtragem, LOW);
+      }
+  }
+
+
+    
+  //To activate bombinhaLadrao to remove water from machine-house.
+  if (nivel_Interruption_Flag){
+    nivel_Interruption_Flag = false;
+    if (digitalRead(gpio_Nivel) == LOW){ //tem agua. Ligar bombinhaLadrao
+      // Toggle device state
+      switch_state_bombinhaLadrao = true; //modulo rele ativo em 0
+      FLAG_TRIGGER_BOMBINHA_OFF = false;
+      Serial.printf("Tem agua. Aciona BombinhaLadrao to %s.\n", switch_state_bombinhaLadrao ? "true" : "false");
+      if (switch_BombinhaLadrao) {
+                switch_BombinhaLadrao->updateAndReportParam(ESP_RMAKER_DEF_POWER_NAME,
+                                                switch_state_bombinhaLadrao);
             }
-            (switch_state_Filtragem == false) ? digitalWrite(gpio_switch_Filtragem, HIGH)
-            : digitalWrite(gpio_switch_Filtragem, LOW);
-        }
+            digitalWrite(gpio_switch_BombinhaLadrao, LOW);     //activates bombinha ladrao
     }
-
-
-      
-    //Logica para acionar a bomba ladrão do buraco da casa de maquinas
-    if (nivel_Interruption_Flag){
-      nivel_Interruption_Flag = false;
-      if (digitalRead(gpio_Nivel) == LOW){ //tem agua. Ligar bombinhaLadrao
-        // Toggle device state
-          //switch_state_bombinhaLadrao = !switch_state_bombinhaLadrao;
-          switch_state_bombinhaLadrao = true; //modulo rele ativo em 0
-          Serial.printf("Tem agua. Aciona BombinhaLadrao to %s.\n", switch_state_bombinhaLadrao ? "true" : "false");
-        if (switch_BombinhaLadrao) {
-                  switch_BombinhaLadrao->updateAndReportParam(ESP_RMAKER_DEF_POWER_NAME,
-                                                  switch_state_bombinhaLadrao);
-              }
-              //(switch_state_bombinhaLadrao == false) ? digitalWrite(gpio_switch_BombinhaLadrao, HIGH)
-              //: 
-              digitalWrite(gpio_switch_BombinhaLadrao, LOW);     //activates bombinha ladrao
-      }
-      else{//nao tem agua. Desligar bombinhaLadrao
-        // Toggle device state
-          //switch_state_bombinhaLadrao = !switch_state_bombinhaLadrao;
-          switch_state_bombinhaLadrao = false; //modulo rele desativado em 1
-          Serial.printf("Nao tem agua. Desliga BombinhaLadrao to %s.\n", switch_state_bombinhaLadrao ? "true" : "false");
-        if (switch_BombinhaLadrao) {
-                  switch_BombinhaLadrao->updateAndReportParam(ESP_RMAKER_DEF_POWER_NAME,
-                                                  switch_state_bombinhaLadrao);
-              }
-              //(switch_state_bombinhaLadrao == false) ? digitalWrite(gpio_switch_BombinhaLadrao, HIGH)
-              //: 
-              digitalWrite(gpio_switch_BombinhaLadrao, HIGH);     //activates bombinha ladrao
-      }
+    else{ //reed switch off again. However, there is still water in the dead volume.
+          //we will keep bombinhaLadrao on for more NUMBER_OF_MINUTES_KEEP_BOMBLADRAO minutes.  
+      currentTime2 = millis();
+      timer2StartTime = currentTime2; // Reset timer 2   
+      FLAG_TRIGGER_BOMBINHA_OFF = true;   
     }
+  }
 
-
-
-    delay(100);
+  delay(100);
 }
 
 
@@ -411,4 +421,18 @@ void sendTemperaturas()
 
 void trataInterrupcaoNivel(){
   nivel_Interruption_Flag = true;
+}
+
+void turnOffBombinhaLadrao(){
+  nivel_Interruption_Flag = false;
+  FLAG_TRIGGER_BOMBINHA_OFF = false;
+  Serial.printf(" \n \n \n \n turn off Bombinha ")  ;
+  // Toggle device state
+        switch_state_bombinhaLadrao = false; //modulo rele desativado em 1
+        Serial.printf("Nao tem agua. Desliga BombinhaLadrao to %s.\n", switch_state_bombinhaLadrao ? "true" : "false");
+        if (switch_BombinhaLadrao) {
+                  switch_BombinhaLadrao->updateAndReportParam(ESP_RMAKER_DEF_POWER_NAME,
+                                                  switch_state_bombinhaLadrao);
+              }
+              digitalWrite(gpio_switch_BombinhaLadrao, HIGH);     //activates bombinha ladrao
 }

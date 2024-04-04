@@ -21,7 +21,7 @@
 #define NOMINAL_NTC_SERIAL_RES_PISCINA 991
 #define NOMINAL_NTC_SERIAL_RES_PLACAS 987
 #define NUMBER_OF_MINUTES_SEND_TEMP 1
-#define NUMBER_OF_MINUTES_KEEP_BOMBLADRAO 1
+#define NUMBER_OF_MINUTES_KEEP_BOMBLADRAO 5
 unsigned long currentTime1 = 0;
 unsigned long currentTime2 = 0;
 unsigned long timer1StartTime = 0;
@@ -216,7 +216,7 @@ void setup()
       nivel_Interruption_Flag = true;
     }
 
-    
+
     Node my_node;
     my_node = RMaker.initNode("Casa de Maquinas");
 

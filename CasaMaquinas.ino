@@ -21,7 +21,7 @@
 #define NOMINAL_NTC_SERIAL_RES_PISCINA 991
 #define NOMINAL_NTC_SERIAL_RES_PLACAS 987
 #define NUMBER_OF_MINUTES_SEND_TEMP 1
-#define NUMBER_OF_MINUTES_KEEP_BOMBLADRAO 1
+#define NUMBER_OF_MINUTES_KEEP_BOMBLADRAO 5
 unsigned long currentTime1 = 0;
 unsigned long currentTime2 = 0;
 unsigned long timer1StartTime = 0;
@@ -30,6 +30,12 @@ unsigned long timer2StartTime = 0;
 unsigned long timer2Duration = NUMBER_OF_MINUTES_KEEP_BOMBLADRAO * 60000; // 5 minutes in milliseconds
 const char *service_name = "CasaMaquinas";
 const char *pop = "Odilon";
+// Define a global boolean variable
+bool FIRST_CONNECTION = false;
+unsigned long currentMillis = millis();
+unsigned long previousMillis = 0;
+unsigned long RECONNECT_INTERVAL = 10000; // Check every 10 seconds
+
 bool FLAG_TRIGGER_BOMBINHA_OFF = false;
 
 // GPIO for push button
@@ -71,7 +77,7 @@ THERMISTOR ntc_Placas  (A3, NOMINAL_NTC_RES, NTC_BETA_PLACAS, NOMINAL_NTC_SERIAL
 
 void sysProvEvent(arduino_event_t *sys_event)
 {
-    switch (sys_event->event_id) {
+  switch (sys_event->event_id) {
     case ARDUINO_EVENT_PROV_START:
 #if CONFIG_IDF_TARGET_ESP32S2
         Serial.printf("\nProvisioning Started with name \"%s\" and PoP \"%s\" on SoftAP\n",
@@ -89,9 +95,21 @@ void sysProvEvent(arduino_event_t *sys_event)
     case ARDUINO_EVENT_PROV_CRED_SUCCESS:
         wifi_prov_mgr_stop_provisioning();
         break;
+    //Try to add feature for forcing reconnecting from time to time
+    case SYSTEM_EVENT_STA_GOT_IP:
+        FIRST_CONNECTION = true; // Set the boolean to true when connected
+        Serial.println("WiFi Connected");
+        break;
+    case SYSTEM_EVENT_STA_DISCONNECTED:
+        // wifiConnected = false; // Set the boolean to false when disconnected
+        Serial.println("WiFi Disconnected");
+        break;
     default:;
     }
 }
+
+
+
 
 void write_callback_Filtragem(Device *device, Param *param, const param_val_t val,
                     void *priv_data, write_ctx_t *ctx)
@@ -216,7 +234,7 @@ void setup()
       nivel_Interruption_Flag = true;
     }
 
-    
+
     Node my_node;
     my_node = RMaker.initNode("Casa de Maquinas");
 
@@ -377,6 +395,19 @@ void loop()
       FLAG_TRIGGER_BOMBINHA_OFF = true;   
     }
   }
+
+
+  if ( FIRST_CONNECTION && (WiFi.status() != WL_CONNECTED)) {
+    if (currentMillis - previousMillis >= RECONNECT_INTERVAL) {        // First time connection is lost
+      Serial.println("Wi-Fi connection lost. Timeout over. Reconnecting...");
+      WiFi.disconnect();
+      WiFi.reconnect();
+      // reconnecting = true;
+      // Subsequent reconnection attempts
+      previousMillis = currentMillis;
+    }
+  }
+
 
   delay(100);
 }

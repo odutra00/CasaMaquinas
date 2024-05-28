@@ -32,7 +32,7 @@ const char *service_name = "CasaMaquinas";
 const char *pop = "Odilon";
 // Define a global boolean variable
 bool FIRST_CONNECTION = false;
-unsigned long currentMillis = millis();
+unsigned long currentMillis; //= millis();
 unsigned long previousMillis = 0;
 unsigned long RECONNECT_INTERVAL = 10000; // Check every 10 seconds
 
@@ -98,7 +98,7 @@ void sysProvEvent(arduino_event_t *sys_event)
     //Try to add feature for forcing reconnecting from time to time
     case SYSTEM_EVENT_STA_GOT_IP:
         FIRST_CONNECTION = true; // Set the boolean to true when connected
-        Serial.println("WiFi Connected");
+        Serial.printf("\nWiFi Connected at added event SYSTEM_EVENT_STA_GOT_IP and FIRST_CONNECTION = %d", FIRST_CONNECTION);
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         // wifiConnected = false; // Set the boolean to false when disconnected
@@ -330,13 +330,13 @@ void setup()
 
 void loop()
 {
-  currentTime1 = millis();
+  currentTime1 = millis();//for teperature sending logic
   if (currentTime1 - timer1StartTime >= timer1Duration) {
     // Timer 1 duration reached
     timer1StartTime = currentTime1; // Reset timer 1
     sendTemperaturas();    
   }
-  currentTime2 = millis();
+  currentTime2 = millis();//for drain little pump logic
   if ( (currentTime2 - timer2StartTime >= timer2Duration) && (FLAG_TRIGGER_BOMBINHA_OFF) ) {
     // Timer 2 duration reached
     turnOffBombinhaLadrao();
@@ -396,16 +396,16 @@ void loop()
     }
   }
 
-
-  if ( FIRST_CONNECTION && (WiFi.status() != WL_CONNECTED)) {
-    if (currentMillis - previousMillis >= RECONNECT_INTERVAL) {        // First time connection is lost
-      Serial.println("Wi-Fi connection lost. Timeout over. Reconnecting...");
-      WiFi.disconnect();
-      WiFi.reconnect();
-      // reconnecting = true;
-      // Subsequent reconnection attempts
-      previousMillis = currentMillis;
-    }
+  //logic to force reconnection
+  currentMillis = millis();
+  if ( FIRST_CONNECTION && (WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= RECONNECT_INTERVAL)) {
+    Serial.printf("\nGot in Recconection control loop. %dFIRST_CONNECTION =  and %dWL_CONNECTED = ", FIRST_CONNECTION,  WL_CONNECTED);
+    Serial.println("Wi-Fi connection lost. Timeout over. Reconnecting...");
+    WiFi.disconnect();
+    WiFi.reconnect();
+    // reconnecting = true;
+    // Subsequent reconnection attempts
+    previousMillis = currentMillis;
   }
 
 
@@ -457,7 +457,7 @@ void trataInterrupcaoNivel(){
 void turnOffBombinhaLadrao(){
   nivel_Interruption_Flag = false;
   FLAG_TRIGGER_BOMBINHA_OFF = false;
-  Serial.printf(" \n \n \n \n turn off Bombinha ")  ;
+  Serial.printf(" \n \n \n \n turn off Bombinha ");
   // Toggle device state
         switch_state_bombinhaLadrao = false; //modulo rele desativado em 1
         Serial.printf("Nao tem agua. Desliga BombinhaLadrao to %s.\n", switch_state_bombinhaLadrao ? "true" : "false");
